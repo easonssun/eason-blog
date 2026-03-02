@@ -4,30 +4,40 @@ on:
   push:
     branches: [master] # 当推送到 main 分支时触发
 
+# 设置 GITHUB_TOKEN 的权限
+permissions:
+  contents: write # 允许写入内容
+  pages: write # 允许部署到 Pages
+  id-token: write # 允许使用 OIDC token
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.6.2 # 你可以指定 pnpm 版本
+          run_install: false
+
       - name: 设置 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 22
+          cache: pnpm # 使用 pnpm 缓存
 
       - name: 安装依赖
-        run: npm ci
+        run: pnpm install
 
       - name: 构建博客
-        run: npm run docs:build
+        run: pnpm docs:build
 
       - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/.vitepress/dist # VitePress 默认构建输出目录
-          publish_branch: gh-pages # 部署到 gh-pages 分支
+          publish_dir: docs/.vitepress/dist
+          publish_branch: gh-pages
