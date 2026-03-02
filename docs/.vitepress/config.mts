@@ -1,7 +1,10 @@
 import { defineConfig } from 'vitepress'
 
+const base = '/eason-blog/'
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: base,
   title: "Eason Site",
   description: "Eason Blogs",
   themeConfig: {
